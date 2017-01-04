@@ -1,5 +1,6 @@
 package com.yahoo.palagummi.newsreaderapp;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.webkit.WebView;
@@ -19,5 +20,7 @@ public class ArticleActivity extends AppCompatActivity {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient());
 
+        Intent intent = getIntent();
+        webView.loadData(intent.getStringExtra("content"), "text/html", "UTF-8");
     }
 }

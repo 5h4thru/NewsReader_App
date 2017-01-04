@@ -1,5 +1,6 @@
 package com.yahoo.palagummi.newsreaderapp;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
@@ -7,6 +8,8 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -41,6 +44,16 @@ public class MainActivity extends AppCompatActivity {
 
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, titles);
         listView.setAdapter(arrayAdapter);
+
+        // onClick listener to tell us which article was clicked
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getApplicationContext(), ArticleActivity.class);
+                intent.putExtra("content", contents.get(i));
+                startActivity(intent);
+            }
+        });
 
         articlesDatabase = this.openOrCreateDatabase("articles", MODE_PRIVATE, null);
         articlesDatabase.execSQL("CREATE TABLE IF NOT EXISTS articles (id INT PRIMARY KEY, articleId INT, title VARCHAR, content VARCHAR)");
