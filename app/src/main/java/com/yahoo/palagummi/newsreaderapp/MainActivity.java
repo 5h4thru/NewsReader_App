@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     ListView listView;
     ArrayList<String> titles = new ArrayList<>();
+    ArrayList<String> contents = new ArrayList<>();
     ArrayAdapter arrayAdapter;
     SQLiteDatabase articlesDatabase;
 
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
         articlesDatabase = this.openOrCreateDatabase("articles", MODE_PRIVATE, null);
         articlesDatabase.execSQL("CREATE TABLE IF NOT EXISTS articles (id INT PRIMARY KEY, articleId INT, title VARCHAR, content VARCHAR)");
 
+        updateListView();
+
         DownloadTask task = new DownloadTask();
         try {
             task.execute("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //
+        // at this point the database contains all the content of top 20 articles
     }
 
 
@@ -61,6 +64,17 @@ public class MainActivity extends AppCompatActivity {
 
         int titleIndex = c.getColumnIndex("title");
         int contentIndex = c.getColumnIndex("content");
+
+        if(c.moveToFirst()) {
+            titles.clear();
+            contents.clear();
+            do {
+                titles.add(c.getString(titleIndex));
+                contents.add(c.getString(contentIndex));
+            } while(c.moveToNext());
+
+            arrayAdapter.notifyDataSetChanged();
+        }
     }
 
 
@@ -146,6 +160,12 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            updateListView();
         }
     }
 }
